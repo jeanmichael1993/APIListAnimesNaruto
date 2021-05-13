@@ -1,25 +1,29 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
+import ListaAnimeNaruto from './componentes/ListaAnimeNaruto';
+import hoc from './componentes/hoc';
 
 function App() {
+  const CarregandoAnimes = hoc(ListaAnimeNaruto);
+  const [estadoDaAplicacao, setEstadoDaAplicacao] = useState({
+    consultando: false,
+    animes: null,
+  });
+
+  useEffect(() => {
+    setEstadoDaAplicacao({ consultando: true });
+    const apiUrl = `https://api.jikan.moe/v3/search/anime?q=naruto`;
+    fetch(apiUrl)
+      .then((res) => res.json())
+      .then((repos) => {
+        setEstadoDaAplicacao({ consultando: false, animes: repos.results });
+      });
+  }, [setEstadoDaAplicacao]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <CarregandoAnimes isLoading={estadoDaAplicacao.consultando} animes={estadoDaAplicacao.animes} />
     </div>
   );
 }
-
 export default App;
